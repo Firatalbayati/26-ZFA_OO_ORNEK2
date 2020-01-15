@@ -1,0 +1,63 @@
+*&---------------------------------------------------------------------*
+*& Report  ZFA_OO_ORNEK2
+*&
+*&---------------------------------------------------------------------*
+*&
+*&
+*&---------------------------------------------------------------------*
+
+REPORT zfa_oo_ornek2.
+
+
+INCLUDE zfa_oo_ornek2_top.
+INCLUDE zfa_oo_ornek2_clss.
+
+
+START-OF-SELECTION.
+*INITIALIZATION.
+
+  CREATE OBJECT go_musteri. "nesne yaratık
+  APPEND go_musteri TO gt_musteri. "ekledik internal tablo değişkeni(gt_musteri)
+
+  CREATE OBJECT go_perakende.
+  APPEND go_perakende TO gt_musteri. "internal tablo değişkeni(gt_musteri)
+
+  CREATE OBJECT go_toptan.
+  APPEND go_toptan TO gt_musteri. "internal tablo değişkeni(gt_musteri)
+
+
+  gv_fiyat = go_musteri->temel_fiyat_hesapla( ). "sınıflardan çağrdık ve ekrana yazdık
+  WRITE / gv_fiyat.   "100
+
+  gv_fiyat = go_perakende->temel_fiyat_hesapla( ).
+  WRITE / gv_fiyat.   "80
+
+  gv_fiyat = go_toptan->temel_fiyat_hesapla( ).
+  WRITE / gv_fiyat.   "70
+
+
+  " ikinci yöntem
+  go_musteri = go_perakende.                           "üst sınıf referans tipile alt sınıfın kodunu çağrılmasıdır
+  gv_fiyat = go_musteri->temel_fiyat_hesapla( ).
+  WRITE / gv_fiyat.   "80
+
+  go_musteri = go_toptan.
+  gv_fiyat = go_musteri->temel_fiyat_hesapla( ).
+  WRITE / gv_fiyat.   "70
+
+  SKIP 3.
+  LOOP AT gt_musteri INTO go_musteri.             "döngü , her satırı yazar ve döner 2.satırı yazar bittene kadar
+    gv_fiyat = go_musteri->temel_fiyat_hesapla( ).
+    WRITE / gv_fiyat.
+  ENDLOOP.
+
+  CREATE OBJECT go_musteri2.
+  CREATE OBJECT go_sts1.
+  SET HANDLER go_sts1->satisi_kontrol_et FOR go_musteri2.
+
+  go_musteri2->satin_al( EXPORTING iv_satis_deger = 500 ).
+  go_musteri2->satin_al( EXPORTING iv_satis_deger = 400 ).
+  go_musteri2->satin_al( EXPORTING iv_satis_deger = 300 ).
+
+
+END-OF-SELECTION.

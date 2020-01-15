@@ -1,0 +1,18 @@
+*&---------------------------------------------------------------------*
+*&  Include           ZFA_OO_ORNEK2_TOP
+*&---------------------------------------------------------------------*
+CLASS : lcl_musteri           DEFINITION DEFERRED,
+        lcl_perakende_musteri DEFINITION DEFERRED,
+        lcl_toptan_musteri    DEFINITION DEFERRED,
+        lcl_satis_elemani     DEFINITION DEFERRED.
+
+
+
+DATA: go_musteri   TYPE REF TO lcl_musteri,
+      go_perakende TYPE REF TO lcl_perakende_musteri,
+      go_toptan    TYPE REF TO lcl_toptan_musteri,
+      gt_musteri   TYPE TABLE OF REF TO lcl_musteri, "lcl_musteriye referans eden internal tablo değişkeni(gt_musteri)
+      go_musteri2  TYPE REF TO lcl_musteri,
+      go_sts1
+      TYPE REF TO lcl_satis_elemani,
+      gv_fiyat     TYPE i.

@@ -1,0 +1,105 @@
+*&---------------------------------------------------------------------*
+*&  Include           ZFA_OO_ORNEK2_CLSS
+*&---------------------------------------------------------------------*
+
+CLASS lcl_musteri DEFINITION.
+
+  PUBLIC SECTION.
+    METHODS : temel_fiyat_hesapla
+              RETURNING VALUE(rv_fiyat) TYPE i.
+
+    EVENTS  : satis_siniri_asildi
+              EXPORTING VALUE(ev_sinir) TYPE i.
+
+    METHODS :satin_al IMPORTING iv_satis_deger TYPE i.
+
+
+
+  PRIVATE SECTION.
+    DATA mv_toplam_deger TYPE i.
+
+ENDCLASS.
+
+
+CLASS lcl_musteri IMPLEMENTATION.
+
+  METHOD : temel_fiyat_hesapla.
+    rv_fiyat = 100.
+  ENDMETHOD.
+
+  METHOD satin_al.
+    mv_toplam_deger = mv_toplam_deger + iv_satis_deger.
+    IF mv_toplam_deger > 1000.
+      RAISE EVENT satis_siniri_asildi
+           EXPORTING ev_sinir = mv_toplam_deger.
+
+    ELSE.
+      WRITE :/ mv_toplam_deger.
+    ENDIF.
+  ENDMETHOD.
+
+
+
+ENDCLASS.
+
+
+***************************
+"bir müşteriden fazla
+CLASS lcl_toptan_musteri DEFINITION INHERITING FROM lcl_musteri.  "kalıtım kullandık yani üst lcl_musteri DEFINITION sınıftan
+  "kodlar veya değişkenleri kopyalamadan burada kullandık
+  PUBLIC SECTION.
+    METHODS : temel_fiyat_hesapla REDEFINITION.  "üst sınıfın temel_fiyat_hesapla methedonu yeniden tanımlıyoruz
+
+ENDCLASS.
+
+
+CLASS lcl_toptan_musteri IMPLEMENTATION.
+
+  METHOD: temel_fiyat_hesapla.
+    DATA lv_fiyat TYPE i.
+
+    lv_fiyat = super->temel_fiyat_hesapla( ). "üst lcl_musteri IMPLEMENTATION sınıfından çağrdık ve değer atadık
+    rv_fiyat = lv_fiyat - 30.
+
+  ENDMETHOD.
+ENDCLASS.
+
+*************************
+
+CLASS lcl_perakende_musteri DEFINITION INHERITING FROM lcl_musteri. "kalıtım kullandık yani üst lcl_musteri DEFINITION sınıftan
+
+  PUBLIC SECTION.
+    METHODS : temel_fiyat_hesapla REDEFINITION.
+
+ENDCLASS.
+
+CLASS lcl_perakende_musteri IMPLEMENTATION  .
+
+  METHOD temel_fiyat_hesapla.
+    DATA lv_fiyat TYPE i.
+
+    lv_fiyat = super->temel_fiyat_hesapla( )."üst lcl_musteri IMPLEMENTATION sınıfından çağrdık ve değer atadık
+    rv_fiyat = lv_fiyat - 20.
+  ENDMETHOD.
+
+ENDCLASS.
+
+****************************
+
+CLASS lcl_satis_elemani DEFINITION.
+
+  PUBLIC SECTION.
+    METHODS : satisi_kontrol_et
+             FOR EVENT satis_siniri_asildi
+             OF lcl_musteri
+             IMPORTING ev_sinir.
+
+
+ENDCLASS.
+
+
+CLASS lcl_satis_elemani IMPLEMENTATION.
+  METHOD: satisi_kontrol_et.
+    WRITE :/ 'müşteri satis siniri asilid = ',ev_sinir.
+  ENDMETHOD.
+ENDCLASS.
